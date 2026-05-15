@@ -12,6 +12,7 @@ const MangalamUI = {
         this.initTabs();
         this.initAccordion();
         this.initModal();
+        this.initScrollReveal();
     },
 
     cacheElements() {
@@ -41,23 +42,27 @@ const MangalamUI = {
 
     initStickyHeader() {
         let lastScroll = 0;
+        const threshold = 160;
+
         window.addEventListener('scroll', () => {
             const currentScroll = window.pageYOffset;
             
-            if (currentScroll > 100) {
+            // Sticky logic
+            if (currentScroll > threshold) {
                 this.header.classList.add('is-sticky');
             } else {
                 this.header.classList.remove('is-sticky');
             }
 
-            // Optional: Hide/Show on scroll direction
-            if (currentScroll > lastScroll && currentScroll > 500) {
-                this.header.classList.add('nav-hidden');
+            // Hide/Show logic
+            if (currentScroll > lastScroll && currentScroll > 600) {
+                this.header.style.transform = 'translateY(-100%)';
             } else {
-                this.header.classList.remove('nav-hidden');
+                this.header.style.transform = 'translateY(0)';
             }
+            
             lastScroll = currentScroll;
-        });
+        }, { passive: true });
     },
 
     initGallery() {
@@ -103,14 +108,17 @@ const MangalamUI = {
             });
         }
 
-        // Apple-style Zoom Interaction
+        // Smooth Zoom Interaction
         if (zoomSurface) {
             zoomSurface.addEventListener('mousemove', (e) => {
                 const { left, top, width, height } = zoomSurface.getBoundingClientRect();
                 const x = ((e.clientX - left) / width) * 100;
                 const y = ((e.clientY - top) / height) * 100;
-                display.style.transformOrigin = `${x}% ${y}%`;
-                display.style.transform = 'scale(1.5)';
+                
+                requestAnimationFrame(() => {
+                    display.style.transformOrigin = `${x}% ${y}%`;
+                    display.style.transform = 'scale(1.8)';
+                });
             });
 
             zoomSurface.addEventListener('mouseleave', () => {
@@ -119,37 +127,69 @@ const MangalamUI = {
         }
     },
 
+    initScrollReveal() {
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+    },
+
     initTabs() {
-        const triggers = document.querySelectorAll('.tab-trigger');
+        const triggers = document.querySelectorAll('.step-pill');
         const title = document.getElementById('step-title');
         const desc = document.getElementById('step-desc');
         const img = document.getElementById('step-img');
 
         const processData = {
             1: {
-                title: "High-Grade PE100 Material",
-                desc: "We use only certified PE100 grade resin to guarantee maximum stress resistance and service life.",
-                img: "assets/manufacturing-step.png"
+                title: "High-Grade Raw Material Selection",
+                desc: "Vacuum sizing tanks ensure precise outer diameter while internal pressure maintains perfect roundness and wall thickness uniformity.",
+                features: ["PE100 grade material", "Optimal molecular weight distribution"]
             },
             2: {
                 title: "Precision Extrusion",
-                desc: "Advanced German-engineered extruders ensure uniform wall thickness and perfect circularity across all diameters.",
-                img: "assets/1.png" // Using existing assets, ideally these would be unique
+                desc: "Our state-of-the-art extrusion lines melt the raw granules and form them into a continuous pipe with high precision.",
+                features: ["Uniform wall thickness", "Melt temperature control"]
             },
             3: {
-                title: "Controlled Vacuum Cooling",
+                title: "Controlled Cooling",
                 desc: "Multiple stage cooling tanks stabilize the pipe structure rapidly while maintaining dimensional integrity.",
-                img: "assets/manufacturing-step.png"
+                features: ["Stress-free cooling", "Efficient heat transfer"]
             },
             4: {
-                title: "Sizing & Calibration",
+                title: "Laser-Guided Sizing",
                 desc: "Laser-guided sizing sleeves ensure the outer diameter meets strict international tolerances.",
-                img: "assets/manufacturing-step.png"
+                features: ["Micron-level accuracy", "Automated calibration"]
             },
             5: {
-                title: "Strict Quality Control",
-                desc: "Every batch undergoes hydrostatic pressure testing and raw material analysis in our NABL accredited lab.",
-                img: "assets/manufacturing-step.png"
+                title: "Quality Control",
+                desc: "Every batch undergoes hydrostatic pressure testing and raw material analysis in our accredited lab.",
+                features: ["NABL Standards", "Real-time monitoring"]
+            },
+            6: {
+                title: "Automated Marking",
+                desc: "Inkjet or laser marking of specifications, standards, and batch numbers for full traceability.",
+                features: ["Permanent marking", "Clear readability"]
+            },
+            7: {
+                title: "Precision Cutting",
+                desc: "Swarfless cutting systems ensure clean, square ends for perfect jointing during installation.",
+                features: ["Burr-free ends", "Standard lengths"]
+            },
+            8: {
+                title: "Secure Packaging",
+                desc: "Pipes are coiled or bundled securely to prevent damage during transport and storage.",
+                features: ["UV protection", "Safe handling"]
             }
         };
 
@@ -165,13 +205,17 @@ const MangalamUI = {
                 btn.classList.add('active');
 
                 // Content Swap with animation
-                const content = document.querySelector('.panel-content');
+                const content = document.querySelector('.panel-inner');
                 content.style.opacity = '0';
                 
                 setTimeout(() => {
                     title.textContent = data.title;
                     desc.textContent = data.desc;
-                    // img.src = data.img; 
+                    
+                    // Update checkmarks
+                    const checkList = document.querySelector('.step-checkmarks');
+                    checkList.innerHTML = data.features.map(f => `<li><span>${f}</span></li>`).join('');
+                    
                     content.style.opacity = '1';
                 }, 200);
             });
