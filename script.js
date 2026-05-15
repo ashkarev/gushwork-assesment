@@ -17,7 +17,8 @@ const MangalamUI = {
 
     cacheElements() {
         this.header = document.getElementById('main-nav');
-        this.modal = document.getElementById('callback-modal');
+        this.datasheetModal = document.getElementById('datasheet-modal');
+        this.quoteModal = document.getElementById('quote-modal');
         this.body = document.body;
     },
 
@@ -31,11 +32,19 @@ const MangalamUI = {
             });
         }
 
-        // Generic modal triggers
+        // Quote modal triggers (.contact-trigger)
         document.querySelectorAll('.contact-trigger').forEach(trigger => {
             trigger.addEventListener('click', (e) => {
                 e.preventDefault();
-                this.openModal();
+                this.openQuoteModal();
+            });
+        });
+
+        // Datasheet modal triggers (.datasheet-trigger)
+        document.querySelectorAll('.datasheet-trigger').forEach(trigger => {
+            trigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.openDatasheetModal();
             });
         });
     },
@@ -241,46 +250,95 @@ const MangalamUI = {
     },
 
     initModal() {
-        const closeBtn = document.querySelector('.modal-dismiss');
-        const form = document.getElementById('contact-form');
+        // ---- Datasheet Modal ----
+        if (this.datasheetModal) {
+            const dsClose = document.getElementById('datasheet-modal-close');
+            const dsForm = document.getElementById('datasheet-form');
 
-        if (!this.modal) return;
+            this.openDatasheetModal = () => {
+                this.datasheetModal.classList.add('is-visible');
+                this.body.style.overflow = 'hidden';
+            };
 
-        this.openModal = () => {
-            this.modal.classList.add('is-visible');
-            this.body.style.overflow = 'hidden';
-        };
+            this.closeDatasheetModal = () => {
+                this.datasheetModal.classList.remove('is-visible');
+                this.body.style.overflow = '';
+            };
 
-        this.closeModal = () => {
-            this.modal.classList.remove('is-visible');
-            this.body.style.overflow = '';
-        };
+            if (dsClose) dsClose.addEventListener('click', () => this.closeDatasheetModal());
 
-        if (closeBtn) closeBtn.addEventListener('click', this.closeModal);
-        
-        window.addEventListener('click', (e) => {
-            if (e.target === this.modal) this.closeModal();
-        });
-
-        if (form) {
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const submitBtn = form.querySelector('button[type="submit"]');
-                const originalText = submitBtn.textContent;
-
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Processing...';
-
-                // Simulate submission
-                setTimeout(() => {
-                    this.showFeedback('Thank you! Our engineer will call you shortly.', 'success');
-                    form.reset();
-                    this.closeModal();
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = originalText;
-                }, 1500);
+            this.datasheetModal.addEventListener('click', (e) => {
+                if (e.target === this.datasheetModal) this.closeDatasheetModal();
             });
+
+            if (dsForm) {
+                dsForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const btn = document.getElementById('datasheet-submit-btn');
+                    const orig = btn.textContent;
+                    btn.disabled = true;
+                    btn.textContent = 'Sending...';
+                    setTimeout(() => {
+                        this.showFeedback('Catalogue sent! Check your inbox.', 'success');
+                        dsForm.reset();
+                        this.closeDatasheetModal();
+                        btn.disabled = false;
+                        btn.textContent = orig;
+                    }, 1500);
+                });
+            }
         }
+
+        // ---- Quote / Call Back Modal ----
+        if (this.quoteModal) {
+            const qClose = document.getElementById('quote-modal-close');
+            const qForm = document.getElementById('quote-form');
+
+            this.openQuoteModal = () => {
+                this.quoteModal.classList.add('is-visible');
+                this.body.style.overflow = 'hidden';
+            };
+
+            this.closeQuoteModal = () => {
+                this.quoteModal.classList.remove('is-visible');
+                this.body.style.overflow = '';
+            };
+
+            if (qClose) qClose.addEventListener('click', () => this.closeQuoteModal());
+
+            this.quoteModal.addEventListener('click', (e) => {
+                if (e.target === this.quoteModal) this.closeQuoteModal();
+            });
+
+            if (qForm) {
+                qForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const btn = document.getElementById('quote-submit-btn');
+                    const orig = btn.textContent;
+                    btn.disabled = true;
+                    btn.textContent = 'Submitting...';
+                    setTimeout(() => {
+                        this.showFeedback('Request received! Our expert will call you shortly.', 'success');
+                        qForm.reset();
+                        this.closeQuoteModal();
+                        btn.disabled = false;
+                        btn.textContent = orig;
+                    }, 1500);
+                });
+            }
+        }
+
+        // Keyboard close (Escape)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (this.datasheetModal && this.datasheetModal.classList.contains('is-visible')) {
+                    this.closeDatasheetModal();
+                }
+                if (this.quoteModal && this.quoteModal.classList.contains('is-visible')) {
+                    this.closeQuoteModal();
+                }
+            }
+        });
     },
 
     showFeedback(message, type) {

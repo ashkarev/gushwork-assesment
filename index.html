@@ -111,10 +111,10 @@
                         </div>
 
                         <div class="cta-row">
-                            <button class="btn btn-primary contact-trigger">Get Custom Quote</button>
-                            <button class="btn btn-ghost-blue btn-outline-specs">
-                                View Technical Specs
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                            <button class="btn btn-primary contact-trigger" id="hero-quote-btn">Get Custom Quote</button>
+                            <button class="btn btn-outline-specs datasheet-trigger" id="hero-datasheet-btn">
+                                Download Full Technical Datasheet
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
                             </button>
                         </div>
                     </div>
@@ -580,29 +580,61 @@
         </div>
     </footer>
 
-    <!-- Callback Modal -->
-    <div class="modal-overlay" id="callback-modal">
-        <div class="modal-container">
-            <button class="modal-dismiss" aria-label="Close modal">&times;</button>
-            <div class="modal-header">
-                <h2>Request a Callback</h2>
-                <p>Submit your details and an expert will contact you shortly.</p>
+    <!-- Modal 1: Download Full Technical Datasheet -->
+    <div class="modal-overlay" id="datasheet-modal" role="dialog" aria-modal="true" aria-labelledby="datasheet-modal-title">
+        <div class="modal-box">
+            <div class="modal-body">
+                <div class="modal-title-row">
+                    <h2 id="datasheet-modal-title">Let us email the entire catalogue to you</h2>
+                    <button class="modal-close-btn" id="datasheet-modal-close" aria-label="Close modal">&times;</button>
+                </div>
+                <form id="datasheet-form">
+                    <div class="modal-field">
+                        <label for="ds-email">Your Email <span class="required-star">*</span></label>
+                        <input type="email" id="ds-email" placeholder="example@gmail.com" required>
+                    </div>
+                    <div class="modal-field">
+                        <label for="ds-phone">Your Contact <span style="font-weight:400;color:#9CA3AF;">(Optional)</span></label>
+                        <input type="tel" id="ds-phone" placeholder="+91-0000000000">
+                    </div>
+                </form>
             </div>
-            <form class="modal-form" id="contact-form">
-                <div class="form-row">
-                    <input type="text" placeholder="Full Name" required>
+            <div class="modal-footer">
+                <button type="submit" form="datasheet-form" class="modal-submit-btn" id="datasheet-submit-btn">Download Brochure</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Request a Quote / Call Back -->
+    <div class="modal-overlay" id="quote-modal" role="dialog" aria-modal="true" aria-labelledby="quote-modal-title">
+        <div class="modal-box">
+            <div class="modal-body">
+                <div class="modal-title-row">
+                    <h2 id="quote-modal-title">Request a call back</h2>
+                    <button class="modal-close-btn" id="quote-modal-close" aria-label="Close modal">&times;</button>
                 </div>
-                <div class="form-row">
-                    <input type="email" placeholder="Email Address" required>
-                </div>
-                <div class="form-row">
-                    <input type="tel" placeholder="Phone Number" required>
-                </div>
-                <div class="form-row">
-                    <textarea placeholder="Your requirement..." rows="3"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Send Request</button>
-            </form>
+                <form id="quote-form">
+                    <div class="modal-field">
+                        <input type="text" id="qm-name" placeholder="Full Name" required>
+                    </div>
+                    <div class="modal-field">
+                        <input type="text" id="qm-company" placeholder="Company Name">
+                    </div>
+                    <div class="modal-field">
+                        <input type="email" id="qm-email" placeholder="Email Address" required>
+                    </div>
+                    <div class="phone-row">
+                        <span class="phone-country">
+                            +91
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                        </span>
+                        <input type="tel" id="qm-phone" placeholder="7003026616" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="quote-form" class="modal-submit-btn" id="quote-submit-btn">Submit Form</button>
+            </div>
         </div>
     </div>
 
